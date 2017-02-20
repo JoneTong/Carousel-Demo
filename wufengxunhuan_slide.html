@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="jquery-2.2.0.min.js"></script>
+    <style>
+        html, body,ul,li,ol,img {
+            margin: 0;
+            padding: 0;
+        }
+        .box {
+            width: 790px;
+            height: 340px;
+            margin: 0 auto;
+            overflow: hidden;
+            position: relative;
+        }
+        .box .box-img {
+            width: 5530px;
+            height: 100%;
+            margin-left:-790px;
+        }
+        .box-img > img{
+            display: inline-block;
+            width: 790px;
+            height:340px;
+            float: left;
+        }
+        .box > div {
+            height: 60px;
+            width: 30px;
+            background-color: rgba(0,0,0,0.5);
+            color: #fff;
+            font-size:30px;
+            font-weight:bold;
+            text-align: center;
+            line-height: 60px;
+            cursor: pointer;
+            user-select: none;
+            position: absolute;
+            z-index: 100;
+            top: 50%;
+        }
+        .box label {
+            display: block;
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            height: 30px;
+            width: auto;
+            background-color: rgba(255,255,255,0.3);
+            z-index: 300;
+            box-sizing: border-box;
+            padding: 5px;
+            border-radius: 15px;
+        }
+        label div {
+            height: 20px;
+            width: 20px;
+            background-color: #FFFFFF;
+            border-radius: 10px;
+            float: left;
+            margin: auto 5px;
+        }
+        #indexLine .hov{
+            background: #FFAF00;
+        }
+    </style>
+</head>
+<body>
+<div class="box">
+    <div style="margin-top:-30px;" onclick="prev()"><</div>
+    <div style="margin-top:-30px;right: 0" onclick="next()">></div>
+    <ul class="box-img">
+        <img src="banner5.jpg" alt="">
+        <img src="banner1.jpg" alt="">
+        <img src="banner2.jpg" alt="">
+        <img src="banner3.jpg" alt="">
+        <img src="banner4.jpg" alt="">
+        <img src="banner5.jpg" alt="">
+        <img src="banner1.jpg" alt="">
+    </ul>
+    <label id="indexLine">
+
+    </label>
+</div>
+</body>
+<script>
+//根据图片的长度，确定索引按钮的多少
+    var length=$(".box-img").children().length-2;
+    for(var i=0;i<length;i++){
+        if(i==0){
+            $("#indexLine").append("<div class='hov'></div>");
+        }else{
+            $("#indexLine").append("<div></div>");
+        }
+    }
+    $("#indexLine").css("margin-left",$("#indexLine").innerWidth()/-2);
+//轮播
+    var flag=0;
+    var name=null;
+    var date3=0;
+    function slide() {
+        name=setInterval(function () {
+            flag++;
+            picSlide();
+            circle();
+        },2000);
+    }
+    function next(){
+        var date2=date3;
+        date3=new Date();
+        console.log(date3 - date2);
+        if((date3 - date2) > 400){
+            if(name){
+                clearInterval(name);
+            }
+            flag++;
+            picSlide();
+            circle();
+            slide();
+        }
+    }
+    function prev(){
+        var date2=date3;
+        date3=new Date();
+        if((date3 - date2) > 400) {
+            if (name) {//让动画执行完之后再清除计时器，防止出错
+                clearInterval(name);
+            }
+            flag--;
+            picSlideF();
+            circle();
+            slide();
+        }
+    }
+    function picSlide() {
+        if(flag==length){
+            $(".box-img").stop().animate({"margin-left":(-flag-1)*790+"px"},"linear",function () {
+                document.getElementsByClassName("box-img")[0].style.marginLeft=-790+"px";
+            });
+            flag=0;
+        }else{
+            $(".box-img").stop().animate({"margin-left":(-flag-1)*790+"px"},"linear");
+        }
+    }
+    function picSlideF() {
+        if(flag==-1){
+            $(".box-img").stop().animate({"margin-left":0+"px"},"linear",function () {
+                document.getElementsByClassName("box-img")[0].style.marginLeft=-length*790+"px";
+            });
+            flag=length-1;
+        }else{
+            $(".box-img").stop().animate({"margin-left":(-flag-1)*790+"px"},"linear");
+        }
+    }
+    $("#indexLine").on("click","div",function (e) {
+        if(name){//让动画执行完之后再清除计时器，防止出错
+            clearInterval(name);
+        }
+        flag=$(e.target).index();
+        picSlide();
+        circle();
+        slide();
+    });
+    function circle() {
+        var indexLine=$("#indexLine");
+        var circle_child=indexLine.children();
+        circle_child.css('background-color','#fff');
+        circle_child.eq(flag).css('background-color','#FFAF00');
+    }
+//调用函数
+    slide();
+</script>
+</html>
+<!--
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>无缝轮播实践</title>
+    <style type="text/css">
+        *{margin:0;padding:0;list-style:none;}
+        .nav{
+            width:500px;height:274px;margin:100px auto;border:5px solid #1111ee;
+            font-family:"宋体";font-size: 50px;overflow: hidden;position: relative;
+        }
+        .nav .images{
+            width:4000px;position: absolute;left: 0;
+        }
+        .nav .images li{
+            float:left;
+        }
+        .nav .num{
+            position: absolute;width: 100%; bottom: 8px;left: 0;text-align: center;
+            font-size: 0px;
+        }
+        .nav .num li{
+            display: inline-block;width: 15px;height: 15px;background-color: dimgrey;
+            border-radius: 50%;cursor: pointer;margin-right: 5px;
+        }
+        .nav .num .on{background-color: coral;}
+        .nav .btn{
+            width: 40px;height: 60px;background: rgba(0,0,0,0.5);position: absolute;
+            top: 50%;margin-top: -30px;cursor: pointer;text-align: center;line-height: 60px;
+            color: white;display: none;
+        }
+        .nav:hover .btn{display: block;}
+        .nav .btn_l{left:0;}
+        .nav .btn_r{right:0;}
+    </style>
+    <script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var clone=$(".nav .images li").first().clone();
+            $(".nav .images").append(clone);
+            var i=0;
+            var size=$(".nav .images li").size();
+//            点击向左轮播
+            $(".nav .btn_l").click(function () {
+                i&#45;&#45;;
+                if(i==-1){
+                    $(".nav .images").css({left:-(size-1)*500});
+                    i=size-2;
+                }
+                $(".nav .images").stop().animate({left:-i*500}, 500);
+                $(".nav .num li").eq(i).addClass("on").siblings().removeClass("on");
+            });
+//            点击向右轮播
+            $(".nav .btn_r").click(function () {
+                moveR();
+            });
+//            向右轮播函数
+            function moveR() {
+                i++;
+                if(i==size){
+                    $(".nav .images").css({left:0});
+                    i=1;
+                }
+                $(".nav .images").stop().animate({left:-i*500}, 500);
+                if(i==size-1){
+                    $(".nav .num li").eq(0).addClass("on").siblings().removeClass("on");
+                }else {
+                    $(".nav .num li").eq(i).addClass("on").siblings().removeClass("on");
+                }
+            }
+//            鼠标滑过圆点
+            $(".nav .num li").hover(function () {
+                var index=$(this).index();
+                i=index;
+                $(".nav .images").stop().animate({left:-i*500}, 500);
+                $(this).addClass("on").siblings().removeClass("on");
+            });
+//            定时自动轮播
+            var t=setInterval(function () {
+                moveR();
+            },1500);
+//            鼠标滑过图片停止自动轮播
+            $(".nav").hover(function(){
+                        clearInterval(t);},
+                    function(){
+                        t=setInterval(function () {
+                            moveR();
+                        },1500)
+                    });
+        })
+    </script>
+</head>
+<body>
+<div class="nav">
+    <ul class="images">
+        <li><a href="#"><img src="banner1.jpg" width="500"></a></li>
+        <li><a href="#"><img src="banner2.jpg" width="500"></a></li>
+        <li><a href="#"><img src="banner3.jpg" width="500"></a></li>
+        <li><a href="#"><img src="banner4.jpg" width="500"></a></li>
+        <li><a href="#"><img src="banner5.jpg" width="500"></a></li>
+    </ul>
+    <ul class="num">
+        <li class="on"></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+    <div class="btn btn_l">&lt;</div>
+    <div class="btn btn_r">&gt;</div>
+</div>
+</body>
+</html>
+-->
